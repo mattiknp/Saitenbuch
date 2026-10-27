@@ -158,7 +158,7 @@ ol,ul{list-style:none}
 .summary span+span::before{content:"";display:inline-block;width:1px;height:13px;background:var(--line-strong);margin:0 14px;vertical-align:-2px}
 .summary b{color:var(--ink)}
 .rk-thumb{display:grid;place-items:center;width:60px;height:60px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-3)}
-.minibed{height:48px;width:auto}
+
 .coil{width:26px;height:56px;border-radius:9px;background:var(--c);box-shadow:inset 0 0 0 1px rgb(128 140 148/.5),inset -5px 0 7px -3px rgb(0 0 0/.4),inset 4px 0 6px -3px rgb(255 255 255/.18);margin:0 17px 0 17px}
 .tape{display:grid;grid-template-columns:minmax(90px,1fr) auto auto;gap:10px;align-items:center;margin-top:8px;max-width:420px}
 .tape .rail{position:relative;height:14px;border-radius:4px;background:var(--surface-3);border:1px solid var(--line-strong);overflow:hidden}
@@ -175,11 +175,6 @@ ol,ul{list-style:none}
 .badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--on-accent);font:700 11.5px/1 var(--f-ui)}
 .fpanel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px;padding:16px;border-radius:16px;background:var(--surface-1);border:1px solid var(--line)}
 .fclear{grid-column:1/-1}
-.due{margin-top:4px;margin-bottom:6px;padding:4px 16px 8px;border-radius:16px;background:var(--surface-1);border:1px solid var(--line)}
-.due .h3{margin:14px 0 4px}
-.due li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
-.due li:last-child{border-bottom:0}
-.due li div{display:grid;min-width:0} .due li b{font-weight:650} .due li span{font-size:13.5px;color:var(--ink-2)}
 
 /* ── Felder ── */
 .form{display:grid;gap:18px}
@@ -258,13 +253,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink-3)}
 .lcd-cell .lcd-svg{grid-area:d}
 .lcd-unit{grid-area:u;font-size:13px;font-weight:600;color:var(--lcd-dim);padding-bottom:2px}
 .lcd-lbs{flex-basis:100%;font-size:12.5px;color:var(--lcd-dim)}
-.stage{position:relative;margin-top:16px;padding:12px 12px 10px;border-radius:16px;border:1px solid #1B252C;background:radial-gradient(120% 90% at 50% 18%,#142029 0%,#0A1115 72%)}
-.bed{display:block;width:100%;max-width:264px;margin:0 auto;touch-action:pan-y;cursor:pointer}
-.stage-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
-.stage-hint{font-size:12px;color:var(--c-dim,#8A9AA4);text-align:right}
-.tonbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:999px;border:1px solid #2A3841;background:transparent;color:#C5D1D7;font:600 13px/1 var(--f-ui);white-space:nowrap}
-.tonbtn .ic{width:18px;height:18px}
-.tonbtn[aria-pressed="true"]{color:var(--lcd-on);border-color:color-mix(in srgb,var(--lcd-on) 45%,transparent)}
+.stage{position:relative;display:grid;justify-items:center;gap:12px;margin:16px 0 0;padding:22px 16px 16px;border-radius:18px;border:1px solid #1B252C;
+  background:radial-gradient(70% 55% at 50% 32%,#2B3A45 0%,#17222A 55%,#0B1115 100%);color:#E7EEF1;overflow:hidden}
+.stage .pic{display:grid;place-items:center;width:100%}
+.pic-svg{display:block;height:min(560px,62vh);width:auto;max-width:100%;overflow:visible;filter:drop-shadow(0 18px 22px rgb(0 0 0/.45))}
+.stage .pic.own img{display:block;max-width:100%;max-height:min(560px,62vh);width:auto;height:auto;border-radius:12px}
+.pic-probe{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.stage-cap{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;font-size:13px;color:#9FB0B9}
+.stage-cap b{font-weight:650;color:#E7EEF1}
+.nopic{display:none;justify-items:center;gap:10px;padding:34px 10px 10px;text-align:center;color:#9FB0B9;font-size:14px}
+.nopic > .ic{width:54px;height:54px;color:#5B6B75}
+.stage.empty-pic .nopic,.stage.broken .nopic{display:grid}
+.stage.broken .pic{display:none}
+.stage .btn{background:#141E25;border-color:#2A3841;color:#E7EEF1}
+.sheet .pic-svg{height:min(480px,54vh)} .sheet .stage .pic.own img{max-height:min(480px,54vh)}
 .con-dl{display:grid;gap:0;margin-top:14px}
 .con-dl > div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid #1B262D}
 .con-dl dt{font-size:13px;color:var(--c-dim)} .con-dl dd{font-size:14.5px;color:var(--c-ink)}
@@ -275,7 +277,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink-3)}
 .console .chip{background:#141E25;border-color:#26333B;color:#B9C6CD}
 .console .chip.warn{color:#EBB05A;border-color:rgb(235 176 90/.45)} .console .chip.ok{color:#74D6A0;border-color:rgb(116 214 160/.45)}
 .console .sw{box-shadow:inset 0 0 0 1px rgb(255 255 255/.3)}
-@media (hover:hover) and (pointer:fine){.console .btn:not(.primary):hover{background:#1A2730;border-color:#3A4B56}.tonbtn:hover{border-color:#4A5C68}}
+@media (hover:hover) and (pointer:fine){.console .btn:not(.primary):hover{background:#1A2730;border-color:#3A4B56}}
 .hero{display:grid;gap:12px;padding:16px;border-radius:20px;border:1px solid #1D2830;background:linear-gradient(180deg,#0F171C,#0A1014);color:#E7EEF1;box-shadow:var(--shadow)}
 .hero-open{display:grid;grid-template-columns:1fr auto;grid-template-areas:"l c" "t c";gap:12px 10px;align-items:center;width:100%;padding:0;border:0;background:none;text-align:left;color:inherit}
 .hero-open .lcdbox{grid-area:l;padding:11px 13px 9px} .hero-open .lcd-lbs{display:none}
@@ -411,6 +413,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink-3)}
   .swb{height:44px} .btn.icon{width:44px}
   .btn.icon.step{width:44px;height:44px}
 }
+
+/* Schläger-Vorschaubild: Kopf aus dem freigestellten Produktfoto, eigenes Foto mittig */
+.rk-thumb{position:relative;overflow:hidden}
+.rk-thumb .thumb-pic{position:absolute;inset:0;display:grid;place-items:center}
+.rk-thumb .thumb-pic .pic-svg{width:100%;height:100%;filter:none}
+.rk-thumb .thumb-pic.own img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rk-thumb .thumb-pic + .ic{display:none}
+.rk-thumb [data-pic].broken{display:none} .rk-thumb [data-pic].broken + .ic{display:block}
+.rk-thumb.big{width:88px;height:88px;flex:none}
+.pic-edit{display:flex;gap:14px;align-items:center}
+.pic-side{display:grid;gap:8px;min-width:0}
+.pic-btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pic-btns label.btn{display:inline-flex;margin:0} .pic-btns [hidden]{display:none}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 
 </style>
 <!--
@@ -717,17 +733,6 @@ function racketInterval(rid){
   for(let i=0;i<js.length-1;i++) iv.push(daysBetween(js[i+1].date, js[i].date));
   return iv.length? Math.max(7, Math.round(avg(iv))) : null;
 }
-/* „Bald wieder dran“: Schläger, deren letzte Bespannung länger her ist als ihr üblicher Rhythmus. */
-function dueRackets(limit){
-  const out=[];
-  S.rackets.forEach(r=>{
-    const js = jobsOfRacket(r.id); if(!js.length || r.retired) return;
-    const days = daysBetween(js[0].date, todayISO());
-    const rhythm = racketInterval(r.id), basis = rhythm || 60;
-    if(days >= basis) out.push({r, last:js[0], days, basis, known:!!rhythm, ratio:days/basis});
-  });
-  return out.sort((a,b)=>b.ratio-a.ratio).slice(0, limit||3);
-}
 
 /* ══════════ Anzeige: Siebensegment ══════════
    Prozedural gezeichnet: scharf in jeder Größe, Farben über Variablen,
@@ -763,223 +768,122 @@ function lcd(str, o){
   return '<svg class="lcd-svg'+(o.cls?" "+o.cls:"")+'" viewBox="0 0 '+(x+6)+' '+h+'" role="img" aria-label="'+esc(label)+'"'+(o.h?' style="height:'+o.h+'px"':'')+'><g transform="translate(5.6 0) skewX(-6)">'+cells+'</g></svg>';
 }
 
-/* ══════════ Ton ══════════
-   Bespanner prüfen Saiten nach Gehör: höhere Spannung, höherer Ton. Das hier ist eine
-   Näherung (Tonhöhe proportional zur Härte), keine Messung. */
-let AC = null, sndOn = false;
-try{ sndOn = localStorage.getItem("saitenbuch_ton")==="1"; }catch(e){}
-function audio(){
-  if(!AC){ const C = window.AudioContext||window.webkitAudioContext; if(!C) return null; try{ AC = new C(); }catch(e){ return null; } }
-  if(AC.state==="suspended") AC.resume();
-  return AC;
+/* ══════════ Schläger-Fotos ══════════
+   Eigenes Foto (im Archiv gespeichert, verkleinert) hat Vorrang. Sonst das Produktfoto des Modells:
+   es wird nur verlinkt, nicht kopiert, und kommt vom Händler Tennis Warehouse. Deren Bilder zeigen links
+   die Seitenansicht und rechts die Vorderansicht; angezeigt wird nur die Vorderansicht.
+   Das Produktfoto wird freigestellt (Weiß wird per SVG-Filter durchsichtig; manche Fotos kommen schon
+   durchsichtig, deren Alpha bleibt erhalten) und bekommt die Saiten der
+   Bespannung in ihren Farben aus dem Regal. Kopf-Innenrand pro Foto vermessen. */
+const PIC_BASE = "https://img.tennis-warehouse.com/watermark/rs.php?path=";
+const PIC_W = 600, PIC_H = 1029;
+/* [Muster, Bildcode, Vorderansicht x0..x1 und oben y0, Kopf-Innenrand cx, cy, rx, ry]; x-Werte als Anteil der Breite, y-Werte der Höhe */
+const PIC_CATALOG = [
+  [/blade/,       "WB9816", .342, .955, .049, .6517, .2833, .2733, .2182],   // Wilson Blade 98 16x19 v9
+  [/rf\s?0?1/,    "WRF1R",  .348, .957, .056, .6517, .2843, .2717, .2104],   // Wilson RF 01
+  [/v\s?core/,    "YVC98",  .342, .995, .018, .6700, .2619, .2942, .2259],   // Yonex VCORE 98 (2023)
+  [/percept/,     "PERC97", .330, .957, .050, .6433, .2813, .2800, .2143],   // Yonex Percept 97
+  [/pure\s?aero/, "BARO",   .350, .955, .066, .6533, .2915, .2692, .2109],   // Babolat Pure Aero (2023)
+  [/extreme/,     "HREM24", .363, .957, .081, .6583, .3056, .2617, .2065],   // Head Extreme MP (2024)
+  [/radical/,     "HMPR",   .318, 1,    .010, .6567, .2668, .2975, .2357]    // Head Radical MP (2023)
+];
+function catalogEntry(r){
+  const m = String((r&&r.model)||"").toLowerCase();
+  return PIC_CATALOG.find(e=>e[0].test(m)) || null;
 }
-const toneFor = kg => Math.min(300, Math.max(120, 196*(Number(kg)||24)/24));
-function pluckTone(freq, vel){
-  const c = audio(); if(!c) return;
-  const t = c.currentTime, sr = c.sampleRate, n = Math.max(32, Math.round(sr*0.012));
-  const buf = c.createBuffer(1,n,sr), d = buf.getChannelData(0);
-  for(let i=0;i<n;i++) d[i] = (Math.random()*2-1)*(1-i/n);
-  const src = c.createBufferSource(); src.buffer = buf;
-  const del = c.createDelay(0.05); del.delayTime.value = 1/freq;
-  const fb = c.createGain(); fb.gain.value = 0.992;
-  const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600;
-  const out = c.createGain();
-  out.gain.setValueAtTime(0.0001,t);
-  out.gain.exponentialRampToValueAtTime(Math.max(0.02,0.34*vel), t+0.004);
-  out.gain.exponentialRampToValueAtTime(0.0001, t+1.5);
-  src.connect(del); del.connect(lp); lp.connect(fb); fb.connect(del); del.connect(out); out.connect(c.destination);
-  src.start(t); src.stop(t+0.02);
-  setTimeout(()=>{ try{ out.disconnect(); del.disconnect(); }catch(e){} }, 1800);
+const catalogCode = r => { const e = catalogEntry(r); return e? e[1] : null; };
+function racketPic(r){
+  if(!r) return null;
+  if(r.photo) return {src:r.photo, own:true};
+  const e = catalogEntry(r);
+  return e? {src:PIC_BASE+e[1]+"-1.jpg&nw=600", own:false, x0:e[2], x1:e[3], y0:e[4], hoop:{cx:e[5]*PIC_W, cy:e[6]*PIC_H, rx:e[7]*PIC_W, ry:e[8]*PIC_H}} : null;
 }
-function setSound(on){
-  sndOn = !!on;
-  try{ localStorage.setItem("saitenbuch_ton", sndOn?"1":"0"); }catch(e){}
-  paintSound();
-  if(sndOn){ pluckTone(toneFor(24), .8); }
+/* Saiten der Bespannung: Anzahl vom Schläger, Farben aus dem Regal */
+function picStrings(r, j){
+  if(!j) return null;
+  const sm = strg(j.mainId), sc = j.crossId? strg(j.crossId) : sm;
+  return {mains:(r&&r.mains)||16, crosses:(r&&r.crosses)||19, cm:(sm&&sm.color)||"#C9CDD1", cc:(sc&&sc.color)||(sm&&sm.color)||"#C9CDD1"};
 }
-function paintSound(){
-  document.querySelectorAll(".tonbtn").forEach(b=>{
-    b.setAttribute("aria-pressed", String(sndOn));
-    b.innerHTML = ic(sndOn?"speaker-high":"speaker-slash")+"<span>"+(sndOn?"Ton an":"Ton aus")+"</span>";
-  });
-}
-
-/* ══════════ Saitenbett (Canvas) ══════════
-   Echte Saitenzahl des Schlägers, Saitenfarben aus dem Regal. Antippen oder darüber
-   wischen lässt die Saiten schwingen; das Bett gehört zum Gerät und bleibt deshalb in
-   beiden Themen auf dunkler Bühne. */
-const BED_ASPECT = 1.4;
-const beds = new Set();
-/* Sehr dunkle Saiten (Schwarz) wären auf der dunklen Bühne unsichtbar: für das Bild aufhellen. */
+/* Sehr dunkle Saiten wären auf dunklem Grund unsichtbar: für das Bild etwas aufhellen. */
 function viz(hex){
   const m = /^#?([0-9a-f]{6})$/i.exec(hex||""); if(!m) return hex||"#8FA0AA";
   const n = parseInt(m[1],16), r=(n>>16)&255, g=(n>>8)&255, b=n&255;
-  if((0.2126*r+0.7152*g+0.0722*b)/255 > 0.22) return hex;
-  const k = c => Math.round(c*0.42 + 165*0.58);
+  if((0.2126*r+0.7152*g+0.0722*b)/255 > 0.2) return hex;
+  const k = c => Math.round(c*0.5 + 120*0.5);
   return "#"+[k(r),k(g),k(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
-function bedCfgFromJob(j){
-  const r = racket(j.racketId)||{}, sm = strg(j.mainId)||{}, sc = j.crossId? (strg(j.crossId)||{}) : sm;
-  return {mains:r.mains||16, crosses:r.crosses||19, cm:viz(sm.color||"#8FA0AA"), cc:viz(sc.color||sm.color||"#8FA0AA"),
-          tm:+j.tMain||24, tc:+j.tCross||+j.tMain||24};
-}
-function bedCfgFromRacket(rid){
-  const r = racket(rid)||{}, j = jobsOfRacket(rid)[0];
-  if(j) return bedCfgFromJob(j);
-  return {mains:r.mains||16, crosses:r.crosses||19, cm:"#5B6B75", cc:"#5B6B75", tm:24, tc:24};
-}
-function bedGeo(W){
-  const rx = W*0.42, ry = rx*1.26, cy = W*0.03+ry, cx = W/2;
-  const fw = Math.max(5, W*0.026), rxi = rx-fw/2-1, ryi = ry-fw/2-1;
-  return {W, H:W*BED_ASPECT, cx, cy, rx, ry, fw, rxi, ryi};
-}
-function bedStrings(g, cfg){
-  const m=[], c=[];
-  const dx = cfg.mains>1 ? (2*g.rxi*0.80)/(cfg.mains-1) : 0, dy = cfg.crosses>1 ? (2*g.ryi*0.84)/(cfg.crosses-1) : 0;
-  for(let i=0;i<cfg.mains;i++){
-    const x = g.cx + (i-(cfg.mains-1)/2)*dx, k = Math.sqrt(Math.max(0,1-Math.pow((x-g.cx)/g.rxi,2)));
-    m.push({p:x, a:g.cy-g.ryi*k, b:g.cy+g.ryi*k});
+let picSeq = 0;
+const picFail = "this.closest('[data-pic]').classList.add('broken')";
+const f1 = n => n.toFixed(1);
+/* Produktfoto als SVG: Saiten unten (reichen bis unter den Rahmen), darüber das freigestellte Foto,
+   dessen Kopfinneres (Stencil des Herstellers) ausgeblendet wird. vb = Bildausschnitt [x, y, w, h]. */
+function picSVG(pic, st, vb, o){
+  o = o||{};
+  const id = "pc"+(++picSeq), h = pic.hoop, rim = 9;
+  let strings = "";
+  if(st){
+    const cm = esc(viz(st.cm)), cc = esc(viz(st.cc)), sw = o.thin? 3.2 : 2.6;
+    const mx = [], cy = [], spanM = 2*h.rx*.84, spanC = 2*h.ry*.9, c0 = h.cy + h.ry*.02;
+    for(let i=0;i<st.mains;i++) mx.push(h.cx + (st.mains>1? (i/(st.mains-1)-.5)*spanM : 0));
+    for(let i=0;i<st.crosses;i++) cy.push(c0 + (st.crosses>1? (i/(st.crosses-1)-.5)*spanC : 0));
+    const top = h.cy-h.ry-rim, bot = h.cy+h.ry+rim, lft = h.cx-h.rx-rim, rgt = h.cx+h.rx+rim;
+    const ml = (x,a,b) => '<line x1="'+f1(x)+'" y1="'+f1(a)+'" x2="'+f1(x)+'" y2="'+f1(b)+'"/>';
+    const cl = y => '<line x1="'+f1(lft)+'" y1="'+f1(y)+'" x2="'+f1(rgt)+'" y2="'+f1(y)+'"/>';
+    strings = '<g clip-path="url(#'+id+'c)">'+
+      '<g stroke="'+cm+'" stroke-width="'+sw+'">'+mx.map(x=>ml(x,top,bot)).join("")+'</g>'+
+      '<g stroke="'+cc+'" stroke-width="'+sw+'">'+cy.map(cl).join("")+'</g>'+
+      (o.thin? '' : '<g stroke="'+cm+'" stroke-width="'+sw+'">'+mx.map((x,i)=>cy.map((y,k)=>(i+k)%2? '' : ml(x,y-4.5,y+4.5)).join("")).join("")+'</g>'+
+        '<g stroke="#fff" stroke-opacity=".28" stroke-width=".8">'+mx.map(x=>ml(x-.8,top,bot)).join("")+cy.map(y=>'<line x1="'+f1(lft)+'" y1="'+f1(y-.8)+'" x2="'+f1(rgt)+'" y2="'+f1(y-.8)+'"/>').join("")+'</g>')+
+      '</g>';
   }
-  for(let i=0;i<cfg.crosses;i++){
-    const y = g.cy + (i-(cfg.crosses-1)/2)*dy, k = Math.sqrt(Math.max(0,1-Math.pow((y-g.cy)/g.ryi,2)));
-    c.push({p:y, a:g.cx-g.rxi*k, b:g.cx+g.rxi*k});
-  }
-  return {m,c};
+  return '<svg class="pic-svg" viewBox="'+vb.map(f1).join(" ")+'"'+(o.label? ' role="img" aria-label="'+esc(o.label)+'"' : ' aria-hidden="true"')+'><defs>'+
+    '<filter id="'+id+'f" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -4 -4 -4 0 11.6" result="k"/><feComposite in="k" in2="SourceGraphic" operator="in"/></filter>'+
+    '<clipPath id="'+id+'c"><ellipse cx="'+f1(h.cx)+'" cy="'+f1(h.cy)+'" rx="'+f1(h.rx+rim)+'" ry="'+f1(h.ry+rim)+'"/></clipPath>'+
+    '<mask id="'+id+'m" maskUnits="userSpaceOnUse" x="0" y="0" width="'+PIC_W+'" height="'+PIC_H+'"><rect width="'+PIC_W+'" height="'+PIC_H+'" fill="#fff"/><ellipse cx="'+f1(h.cx)+'" cy="'+f1(h.cy)+'" rx="'+f1(h.rx-5)+'" ry="'+f1(h.ry-5)+'" fill="#000"/></mask>'+
+    '<clipPath id="'+id+'v"><rect x="'+f1(pic.x0*PIC_W)+'" y="0" width="'+f1((pic.x1-pic.x0)*PIC_W)+'" height="'+PIC_H+'"/></clipPath></defs>'+
+    strings+'<g clip-path="url(#'+id+'v)"><image href="'+esc(pic.src)+'" width="'+PIC_W+'" height="'+PIC_H+'" filter="url(#'+id+'f)" mask="url(#'+id+'m)" referrerpolicy="no-referrer"/></g></svg>';
 }
-function vib(s, now){
-  if(!s || !s.a) return 0;
-  const t = now - s.t0, e = Math.exp(-t/s.tau);
-  if(e < 0.012){ s.a = 0; return 0; }
-  return s.a*e*Math.cos(2*Math.PI*s.f*t);
+/* Ladefehler bei SVG-<image> lassen sich nicht abfangen: ein unsichtbares <img> mit derselben Adresse meldet ihn. */
+const picProbe = src => '<img class="pic-probe" src="'+esc(src)+'" alt="" referrerpolicy="no-referrer" onerror="'+picFail+'">';
+function picBig(pic, st, alt){
+  if(pic.own) return '<div class="pic own"><img src="'+esc(pic.src)+'" alt="'+esc(alt)+'" decoding="async" onerror="'+picFail+'"></div>';
+  const top = Math.max(0, pic.y0*PIC_H-6);
+  return '<div class="pic">'+picSVG(pic, st, [pic.x0*PIC_W, top, (pic.x1-pic.x0)*PIC_W, PIC_H*.985-top], {label:alt})+picProbe(pic.src)+'</div>';
 }
-function drawBed(b, now){
-  const cv=b.cv, ctx=b.ctx, g=b.geo, cfg=b.cfg; if(!g) return;
-  ctx.setTransform(b.dpr,0,0,b.dpr,0,0);
-  ctx.clearRect(0,0,g.W,g.H);
-  /* Hals und Griff */
-  ctx.lineCap = "round";
-  const yb = g.cy+g.ry, hw = g.W*0.05, throat = ctx.createLinearGradient(0,yb-6,0,g.H);
-  throat.addColorStop(0,"#C9D3D8"); throat.addColorStop(1,"#8E9CA4");
-  ctx.strokeStyle = throat; ctx.lineWidth = Math.max(5,g.W*0.024);
-  ctx.beginPath();
-  ctx.moveTo(g.cx-g.rx*0.34, yb-g.ry*0.08); ctx.lineTo(g.cx-hw, g.H*0.885);
-  ctx.moveTo(g.cx+g.rx*0.34, yb-g.ry*0.08); ctx.lineTo(g.cx+hw, g.H*0.885);
-  ctx.stroke();
-  const gr = ctx.createLinearGradient(g.cx-hw,0,g.cx+hw,0);
-  gr.addColorStop(0,"#2A353C"); gr.addColorStop(.5,"#46545D"); gr.addColorStop(1,"#222D33");
-  ctx.fillStyle = gr;
-  const gx = g.cx-hw*1.05, gy = g.H*0.86, gw = hw*2.1, gh = g.H*0.2, rr = gw*0.35;
-  ctx.beginPath(); ctx.moveTo(gx+rr,gy); ctx.arcTo(gx+gw,gy,gx+gw,gy+gh,rr); ctx.lineTo(gx+gw,gy+gh); ctx.lineTo(gx,gy+gh); ctx.arcTo(gx,gy,gx+gw,gy,rr); ctx.closePath(); ctx.fill();
-  /* Saiten, auf das Innere des Rahmens begrenzt */
-  ctx.save();
-  ctx.beginPath(); ctx.ellipse(g.cx,g.cy,g.rxi,g.ryi,0,0,Math.PI*2); ctx.clip();
-  const sw = Math.max(1.1, g.W*0.0055);
-  ctx.lineWidth = sw; ctx.lineCap = "butt";
-  ctx.strokeStyle = cfg.cc; ctx.globalAlpha = .96;
-  b.str.c.forEach((s,i)=>{
-    const d = vib(b.st.c[i], now);
-    ctx.beginPath(); ctx.moveTo(s.a, s.p); ctx.quadraticCurveTo((s.a+s.b)/2, s.p+2*d, s.b, s.p); ctx.stroke();
+/* Vorschaubild: nur der Kopf, quadratisch. */
+function picThumb(pic, st){
+  if(pic.own) return '<span class="thumb-pic own" data-pic><img src="'+esc(pic.src)+'" alt="" decoding="async" loading="lazy" onerror="'+picFail+'"></span>';
+  const h = pic.hoop, size = 2*(h.rx+22)*1.06, x = h.cx-size/2, y = h.cy-h.ry-22-size*.03;
+  return '<span class="thumb-pic" data-pic>'+picSVG(pic, st, [x, y, size, size], {thin:true})+picProbe(pic.src)+'</span>';
+}
+function racketFigure(r, j){
+  const name = r? (r.brand+" "+r.model).trim() : "Schläger", pic = racketPic(r), st = picStrings(r, j);
+  const strs = j? (j.crossId && j.crossId!==j.mainId? sName(j.mainId)+" und "+sName(j.crossId) : sName(j.mainId)) : "";
+  const cap = '<figcaption class="stage-cap"><b>'+esc(name)+'</b><span class="num">'+((r&&r.mains)||16)+'×'+((r&&r.crosses)||19)+(r&&r.head? ', '+r.head+' in²' : '')+'</span></figcaption>';
+  const add = r? '<button class="btn sm" data-act="editracket" data-id="'+r.id+'">'+ic("camera")+'Foto hinzufügen</button>' : '';
+  const none = '<div class="nopic">'+ic("racket")+'<p>Noch kein Foto von diesem Schläger.</p>'+add+'</div>';
+  if(!pic) return '<figure class="stage empty-pic">'+none+cap+'</figure>';
+  return '<figure class="stage" data-pic>'+picBig(pic, st, name+(strs? ", bespannt mit "+strs : ""))+
+    none.replace("Noch kein Foto von diesem Schläger.","Das Produktfoto ist gerade nicht erreichbar.")+cap+'</figure>';
+}
+function racketThumb(rid){
+  const r = racket(rid), pic = racketPic(r);
+  if(!pic) return ic("racket");
+  return picThumb(pic, picStrings(r, jobsOfRacket(rid)[0]))+ic("racket");
+}
+/* Eigenes Foto: auf höchstens 720 px verkleinern, damit Archiv und Abgleich schlank bleiben. */
+function shrinkPhoto(file){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = ()=>{
+      const k = Math.min(1, 720/Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(im.naturalWidth*k)); c.height = Math.max(1, Math.round(im.naturalHeight*k));
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", .78));
+    };
+    im.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error("Bild nicht lesbar")); };
+    im.src = url;
   });
-  ctx.strokeStyle = cfg.cm;
-  b.str.m.forEach((s,i)=>{
-    const d = vib(b.st.m[i], now);
-    ctx.beginPath(); ctx.moveTo(s.p, s.a); ctx.quadraticCurveTo(s.p+2*d, (s.a+s.b)/2, s.p, s.b); ctx.stroke();
-  });
-  ctx.restore();
-  /* Rahmen */
-  const fr = ctx.createLinearGradient(0,0,0,g.cy+g.ry);
-  fr.addColorStop(0,"#EEF3F5"); fr.addColorStop(1,"#A9B6BD");
-  ctx.strokeStyle = fr; ctx.lineWidth = g.fw;
-  ctx.beginPath(); ctx.ellipse(g.cx,g.cy,g.rx,g.ry,0,0,Math.PI*2); ctx.stroke();
-  ctx.strokeStyle = "rgba(6,10,12,.38)"; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.ellipse(g.cx,g.cy,g.rx-g.fw/2,g.ry-g.fw/2,0,0,Math.PI*2); ctx.stroke();
-}
-function anyVib(b, now){
-  for(const s of b.st.m) if(s && s.a && now-s.t0 < s.tau*4.4) return true;
-  for(const s of b.st.c) if(s && s.a && now-s.t0 < s.tau*4.4) return true;
-  return false;
-}
-function tickBed(b){
-  const now = performance.now()/1000;
-  drawBed(b, now);
-  b.raf = anyVib(b, now) ? requestAnimationFrame(()=>tickBed(b)) : 0;
-  if(!b.raf) drawBed(b, now+99);
-}
-function kickBed(b){ if(!b.raf) b.raf = requestAnimationFrame(()=>tickBed(b)); }
-function pluckString(b, kind, i, amp, dir, loud){
-  const cfg = b.cfg, now = performance.now()/1000, kg = kind==="m"? cfg.tm : cfg.tc;
-  const calm = b.calm;
-  b.st[kind][i] = {a:(calm? Math.min(amp,1.6):amp)*dir, t0:now, f:7+(kg-20)*0.45, tau:calm?0.14:0.78};
-  kickBed(b);
-  if(loud && sndOn && now-b.sndAt > 0.045){ b.sndAt = now; pluckTone(toneFor(kg)*(1+(i%3)*0.0015), Math.min(1, 0.35+amp/10)); }
-}
-function strum(b, p0, p1, loud){
-  const g=b.geo, sp = Math.hypot(p1.x-p0.x, p1.y-p0.y); if(!sp) return;
-  const amp = Math.max(2.2, Math.min(9, sp*0.55));
-  b.str.m.forEach((s,i)=>{
-    if((p0.x-s.p)*(p1.x-s.p) < 0){
-      const y = (p0.y+p1.y)/2; if(y>=s.a-2 && y<=s.b+2) pluckString(b,"m",i,amp,p1.x>p0.x?1:-1,loud);
-    }
-  });
-  b.str.c.forEach((s,i)=>{
-    if((p0.y-s.p)*(p1.y-s.p) < 0){
-      const x = (p0.x+p1.x)/2; if(x>=s.a-2 && x<=s.b+2) pluckString(b,"c",i,amp,p1.y>p0.y?1:-1,loud);
-    }
-  });
-}
-function nearest(b, p){
-  let best=null, bd=11;
-  b.str.m.forEach((s,i)=>{ const d=Math.abs(p.x-s.p); if(d<bd && p.y>=s.a && p.y<=s.b){ bd=d; best={k:"m",i,dir:p.x>=s.p?-1:1}; } });
-  b.str.c.forEach((s,i)=>{ const d=Math.abs(p.y-s.p); if(d<bd && p.x>=s.a && p.x<=s.b){ bd=d; best={k:"c",i,dir:p.y>=s.p?-1:1}; } });
-  return best;
-}
-function makeBed(cv){
-  const cfg = cv.dataset.job ? bedCfgFromJob(jobById(cv.dataset.job)||{}) : bedCfgFromRacket(cv.dataset.racket);
-  const b = {cv, cfg, ctx:cv.getContext("2d"), W:0, dpr:1, geo:null, str:{m:[],c:[]}, st:{m:[],c:[]}, raf:0, sndAt:0, down:false, last:null,
-             calm: !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)};
-  const fit = ()=>{
-    const r = cv.getBoundingClientRect(); if(!r.width) return;
-    b.dpr = Math.min(3, window.devicePixelRatio||1);
-    b.geo = bedGeo(r.width); b.str = bedStrings(b.geo, cfg);
-    cv.style.height = b.geo.H+"px";
-    cv.width = Math.round(b.geo.W*b.dpr); cv.height = Math.round(b.geo.H*b.dpr);
-    drawBed(b, performance.now()/1000+99);
-  };
-  b.fit = fit;
-  const pt = e => { const r = cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; };
-  cv.addEventListener("pointerdown", e=>{
-    b.down = true; try{ cv.setPointerCapture(e.pointerId); }catch(_){}
-    const p = pt(e); b.last = p;
-    const n = nearest(b,p); if(n) pluckString(b,n.k,n.i,8,n.dir,true);
-  });
-  cv.addEventListener("pointermove", e=>{
-    const p = pt(e), prev = b.last || p;
-    if(b.down || e.pointerType==="mouse") strum(b, prev, p, b.down);
-    b.last = p;
-  });
-  const up = ()=>{ b.down = false; };
-  cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
-  cv.addEventListener("pointerleave", ()=>{ if(!b.down) b.last = null; });
-  if(typeof ResizeObserver!=="undefined"){ b.ro = new ResizeObserver(()=>fit()); b.ro.observe(cv); }
-  fit();
-  beds.add(b);
-  return b;
-}
-function mountBeds(root){
-  for(const b of [...beds]) if(!document.contains(b.cv)){ if(b.ro) b.ro.disconnect(); if(b.raf) cancelAnimationFrame(b.raf); beds.delete(b); }
-  (root||document).querySelectorAll("canvas.bed").forEach(cv=>{ if(!cv._bed) cv._bed = makeBed(cv); else cv._bed.fit(); });
-}
-
-/* Kleines, statisches Saitenbett für Listen (SVG, gleiche Geometrie). */
-function miniBed(rid, size){
-  const cfg = bedCfgFromRacket(rid), W=100, g = bedGeo(W), s = bedStrings(g, cfg), id = "mb"+Math.random().toString(36).slice(2,8);
-  let o = '<svg class="minibed" viewBox="0 0 '+W+' '+(W*BED_ASPECT)+'" width="'+(size||34)+'" aria-hidden="true"><defs><clipPath id="'+id+'"><ellipse cx="'+g.cx+'" cy="'+g.cy+'" rx="'+g.rxi+'" ry="'+g.ryi+'"/></clipPath></defs><g clip-path="url(#'+id+')" stroke-width="1.6">';
-  s.c.forEach(c=>{ o += '<line x1="'+c.a.toFixed(1)+'" y1="'+c.p.toFixed(1)+'" x2="'+c.b.toFixed(1)+'" y2="'+c.p.toFixed(1)+'" stroke="'+esc(cfg.cc)+'"/>'; });
-  s.m.forEach(m=>{ o += '<line x1="'+m.p.toFixed(1)+'" y1="'+m.a.toFixed(1)+'" x2="'+m.p.toFixed(1)+'" y2="'+m.b.toFixed(1)+'" stroke="'+esc(cfg.cm)+'"/>'; });
-  o += '</g><ellipse cx="'+g.cx+'" cy="'+g.cy+'" rx="'+g.rx+'" ry="'+g.ry+'" fill="none" stroke="currentColor" stroke-width="'+g.fw.toFixed(1)+'"/>';
-  o += '<path d="M'+(g.cx-g.rx*0.34)+' '+(g.cy+g.ry*0.92)+' L'+(g.cx-5)+' '+(BED_ASPECT*W*0.885)+' M'+(g.cx+g.rx*0.34)+' '+(g.cy+g.ry*0.92)+' L'+(g.cx+5)+' '+(BED_ASPECT*W*0.885)+'" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/>';
-  o += '<rect x="'+(g.cx-5.4)+'" y="'+(BED_ASPECT*W*0.86)+'" width="10.8" height="'+(BED_ASPECT*W*0.14)+'" rx="3.4" fill="currentColor"/></svg>';
-  return o;
 }
 
 /* ══════════ Oberfläche ══════════ */
@@ -1027,7 +931,6 @@ function render(o){
   else if(route.tab==="saiten") html = viewStrings();
   else html = viewStats();
   v.innerHTML = html;
-  mountBeds(v); paintSound();
   if(typeof window!=="undefined" && window.scrollTo) window.scrollTo(0, o.top? 0 : y);   // nur ein Ansichtswechsel springt nach oben
 }
 
@@ -1080,8 +983,7 @@ function jobConsole(j, o){
   return '<article class="console" data-job="'+j.id+'">'+
     '<header class="con-head"><h2 class="con-name">'+esc(pName(j.playerId))+'</h2><p class="con-sub">'+esc(rName(j.racketId))+', '+fmtDate(j.date)+'</p></header>'+
     lcdBox(j, o.lcdH||54)+act+
-    '<div class="stage"><canvas class="bed" data-job="'+j.id+'" role="img" aria-label="Saitenbett mit '+(r.mains||16)+' Längs- und '+(r.crosses||19)+' Quersaiten. Antippen oder wischen zum Anzupfen."></canvas>'+
-    '<div class="stage-bar"><button class="tonbtn" data-act="ton" type="button" aria-pressed="false"></button><span class="stage-hint">Anzupfen: Ton folgt der Härte (Näherung)</span></div></div>'+
+    racketFigure(r, j)+
     '<dl class="con-dl">'+dl+'</dl></article>';
 }
 function heroCompact(j){
@@ -1167,12 +1069,6 @@ function filterPanel(){
     '<div class="field"><label for="fkgmax">Härte bis (kg)</label><input type="number" id="fkgmax" inputmode="decimal" step="0.5" min="10" max="40" value="'+esc(F.kgMax)+'"></div>'+
     '<div class="fclear"><button class="btn sm ghost" data-act="fclear"'+(filterCount()||F.q? '' : ' disabled')+'>Alle Filter zurücksetzen</button></div></div>';
 }
-function dueBlock(){
-  const d = dueRackets(3); if(!d.length) return "";
-  return '<section class="due" aria-labelledby="dueH"><h2 id="dueH" class="h3">Bald wieder dran</h2><ul>'+d.map(x=>
-    '<li><div><b>'+esc(pName(x.r.ownerId))+'</b><span>'+esc(x.r.brand+" "+x.r.model)+', zuletzt '+ago(x.last.date)+(x.known? ' (üblich: alle '+x.basis+' Tage)' : '')+'</span></div>'+
-    '<button class="btn sm" data-act="repeat" data-id="'+x.last.id+'">'+ic("arrow-counter-clockwise")+'Bespannen</button></li>').join("")+'</ul></section>';
-}
 function viewEmpty(){
   const own = S.strings.filter(s=>s.own!==false), r = S.rackets.find(x=>x.ownerId===S.settings.ownerId);
   return '<div class="empty"><div class="empty-lcd" aria-hidden="true">'+lcd("88.8",{ghost:true,h:64})+'</div>'+
@@ -1189,7 +1085,7 @@ function viewArchive(){
     '<button class="btn'+(n?' on':'')+'" data-act="filters" aria-expanded="'+(UI.filters?'true':'false')+'" aria-controls="fpanel">'+ic("funnel-simple")+'Filter'+(n?'<span class="badge">'+n+'</span>':'')+'</button></div>'+(UI.filters? filterPanel():'');
   return '<div class="split">'+
     (isWide()? '<aside class="side" aria-label="Ausgewählte Bespannung">'+jobConsole(sel)+'</aside>' : '')+
-    '<section class="mainc">'+(isWide()? '' : heroCompact(sel))+dueBlock()+toolbar+
+    '<section class="mainc">'+(isWide()? '' : heroCompact(sel))+toolbar+
     '<div id="listwrap">'+summaryLine(list)+ledgerHTML(list)+'</div></section></div>';
 }
 /* Nur die Liste neu zeichnen: die Suche behält so Fokus und Cursor. */
@@ -1203,7 +1099,7 @@ function updateList(){
 function selectJobInPlace(id){
   UI.sel = id;
   const side = document.querySelector(".side");
-  if(side){ side.innerHTML = jobConsole(jobById(id)); mountBeds(side); paintSound(); }
+  if(side) side.innerHTML = jobConsole(jobById(id));
   document.querySelectorAll('.row[aria-current="true"]').forEach(r=>r.removeAttribute("aria-current"));
   const row = document.querySelector('.row[data-id="'+id+'"]'); if(row) row.setAttribute("aria-current","true");
 }
@@ -1225,13 +1121,11 @@ function viewPlayers(){
 
 /* ── Schläger ── */
 function racketRow(r){
-  const js = jobsOfRacket(r.id), last = js[0], rhythm = racketInterval(r.id), days = last? daysBetween(last.date,todayISO()) : null;
-  const due = last && days >= (rhythm||60);
-  return '<button class="row" data-act="racket" data-id="'+r.id+'"><span class="rk-thumb">'+miniBed(r.id,30)+'</span>'+
+  const js = jobsOfRacket(r.id), last = js[0];
+  return '<button class="row" data-act="racket" data-id="'+r.id+'"><span class="rk-thumb">'+racketThumb(r.id)+'</span>'+
     '<span class="row-main"><span class="row-name">'+esc(r.brand+" "+r.model)+'</span><span class="row-sub">'+esc(pName(r.ownerId))+'</span>'+
     '<span class="row-strings num">'+r.mains+'×'+r.crosses+(r.head? ', '+r.head+' in²' : '')+(r.weight? ', '+r.weight+' g' : '')+'</span></span>'+
-    '<span class="row-side">'+(last? '<span class="row-date num">'+fmtKg(last.tMain)+(isSplit(last)? ' / '+fmtKg(last.tCross) : '')+' kg</span><span class="row-ago">'+ago(last.date)+'</span>' : '<span class="row-ago">noch nie bespannt</span>')+
-    (due? '<span class="chip warn">wieder dran</span>' : '')+'</span></button>';
+    '<span class="row-side">'+(last? '<span class="row-date num">'+fmtKg(last.tMain)+(isSplit(last)? ' / '+fmtKg(last.tCross) : '')+' kg</span><span class="row-ago">'+ago(last.date)+'</span>' : '<span class="row-ago">noch nie bespannt</span>')+'</span></button>';
 }
 function viewRackets(){
   const rs = [...S.rackets].sort((a,b)=> (isMe(b.ownerId)?1:0)-(isMe(a.ownerId)?1:0) || jobsOfRacket(b.id).length-jobsOfRacket(a.id).length);
@@ -1321,7 +1215,6 @@ function openSheet(o){
   void el.offsetHeight;            // Startzustand festschreiben, dann sofort einschalten (kein Warten auf einen Frame)
   el.classList.add("on");
   if(o.onMount) o.onMount(sheet, layer);
-  mountBeds(sheet); paintSound();
   if(o.focus!==false){
     const f = sheet.querySelector("[data-autofocus]") || sheet.querySelector("input:not([type=hidden]):not([type=range]):not([type=radio]),select,textarea");
     try{ (f||sheet).focus({preventScroll:true}); }catch(e){}
@@ -1538,6 +1431,8 @@ function racketForm(r, cb, presetOwner){
     '<div class="form"><div class="field"><label for="rOwner">Besitzer</label><div class="sel"><select id="rOwner">'+S.players.map(p=>optionHTML(p.id,p.name,d.ownerId)).join("")+'</select></div></div>'+
     '<div class="row2"><div class="field"><label for="rBrand">Marke</label><input type="text" id="rBrand" data-autofocus value="'+esc(d.brand)+'" placeholder="Wilson, Babolat, Head" autocomplete="off"></div>'+
     '<div class="field"><label for="rModel">Modell</label><input type="text" id="rModel" value="'+esc(d.model)+'" placeholder="Blade v9 98" autocomplete="off"></div></div>'+
+    '<div class="field"><span class="flabel">Foto</span><div class="pic-edit"><span class="rk-thumb big" id="rPicBox"></span><div class="pic-side"><p class="hint" id="rPicHint"></p>'+
+    '<div class="pic-btns"><label class="btn sm" for="rPhoto">'+ic("camera")+'Eigenes Foto</label><input type="file" accept="image/*" id="rPhoto" class="vh"><button type="button" class="btn sm ghost" id="rPhotoDel">Entfernen</button></div></div></div></div>'+
     '<div class="row3"><div class="field"><label for="rMains">Längssaiten</label><input type="number" inputmode="numeric" id="rMains" min="12" max="20" value="'+d.mains+'"></div>'+
     '<div class="field"><label for="rCross">Quersaiten</label><input type="number" inputmode="numeric" id="rCross" min="12" max="24" value="'+d.crosses+'"></div>'+
     '<div class="field"><label for="rHead">Kopf (in²)</label><input type="number" inputmode="numeric" id="rHead" min="80" max="130" value="'+d.head+'"></div></div>'+
@@ -1549,6 +1444,21 @@ function racketForm(r, cb, presetOwner){
     onMount(sh){
       const q = s => sh.querySelector(s);
       try{ q("#rBrand").focus({preventScroll:true}); }catch(e){}
+      let photo = d.photo || "";
+      const paintPic = ()=>{
+        const tmp = {brand:q("#rBrand").value, model:q("#rModel").value, photo}, pic = racketPic(tmp);
+        q("#rPicBox").innerHTML = pic? picThumb(pic, r? picStrings(r, jobsOfRacket(r.id)[0]) : null)+ic("racket") : ic("racket");
+        q("#rPicHint").textContent = photo? "Dein eigenes Foto." : pic? "Produktfoto des Modells. Mit einem eigenen Foto siehst du genau diesen Schläger." : "Für dieses Modell gibt es kein Produktfoto. Mach einfach selbst eins.";
+        q("#rPhotoDel").hidden = !photo;
+      };
+      paintPic();
+      q("#rModel").addEventListener("input", paintPic); q("#rBrand").addEventListener("input", paintPic);
+      q("#rPhoto").addEventListener("change", async e=>{
+        const file = e.target.files && e.target.files[0]; if(!file) return;
+        try{ photo = await shrinkPhoto(file); paintPic(); }catch(err){ toast("Das Bild ließ sich nicht lesen"); }
+        e.target.value = "";
+      });
+      q("#rPhotoDel").onclick = ()=>{ photo = ""; paintPic(); };
       const dl = q("#rDel");
       if(dl) dl.onclick = ()=> confirmDialog("Schläger löschen?", r.brand+" "+r.model+" und "+jobsOfRacket(r.id).length+" zugehörige Bespannungen werden gelöscht.",
         ()=>{ S.jobs = S.jobs.filter(j=>j.racketId!==r.id); S.rackets = S.rackets.filter(x=>x.id!==r.id); save(); closeAllSheets(); render(); toast("Schläger gelöscht"); });
@@ -1556,7 +1466,7 @@ function racketForm(r, cb, presetOwner){
         const brand = q("#rBrand").value.trim(), model = q("#rModel").value.trim();
         if(!brand && !model){ toast("Marke oder Modell angeben"); return; }
         const rec = {ownerId:q("#rOwner").value, brand, model, mains:+q("#rMains").value||16, crosses:+q("#rCross").value||19,
-          head:q("#rHead").value? +q("#rHead").value : "", weight:q("#rWeight").value? +q("#rWeight").value : "", grip:q("#rGrip").value.trim(), note:q("#rNote").value.trim(), retired:false};
+          head:q("#rHead").value? +q("#rHead").value : "", weight:q("#rWeight").value? +q("#rWeight").value : "", grip:q("#rGrip").value.trim(), note:q("#rNote").value.trim(), photo, retired:false};
         let out;
         if(isNew){ out = Object.assign({id:uid()}, rec); S.rackets.push(out); }
         else { const i = S.rackets.findIndex(x=>x.id===r.id); S.rackets[i] = Object.assign({}, S.rackets[i], rec); out = S.rackets[i]; }
@@ -1649,7 +1559,7 @@ function racketSheet(r){
     (kgs.length? '<div><dt>Durchschnitt</dt><dd class="num">'+fmtKg(avg1(kgs))+' kg</dd></div>' : '')+(rhythm? '<div><dt>Rhythmus</dt><dd class="num">alle '+rhythm+' Tage</dd></div>' : '')+(r.note? '<div><dt>Notiz</dt><dd>'+esc(r.note)+'</dd></div>' : '');
   openSheet({title:r.brand+" "+r.model, wide:true, focus:false,
     headExtra:'<button class="btn sm" data-act="editracket" data-id="'+r.id+'">'+ic("pencil-simple")+'Bearbeiten</button>',
-    body:'<div class="stage light"><canvas class="bed" data-racket="'+r.id+'" role="img" aria-label="Saitenbett, antippen zum Anzupfen"></canvas><div class="stage-bar"><button class="tonbtn" data-act="ton" type="button" aria-pressed="false"></button><span class="stage-hint">'+(last? 'Mit der Bespannung vom '+fmtDate(last.date) : 'Noch nie bespannt')+'</span></div></div>'+
+    body:racketFigure(r, last)+
       '<dl class="facts">'+facts+'</dl><h3 class="h3">Historie</h3>'+(js.length? ledgerHTML(js,{flat:true,noSelect:true}) : '<p class="note">Noch keine Bespannung für diesen Schläger.</p>'),
     foot:'<span class="lead"></span><button class="btn primary" data-act="newjobrk" data-id="'+r.id+'">'+ic("plus")+'Bespannung</button>'});
 }
@@ -1963,7 +1873,6 @@ const ACT = {
   filters(){ UI.filters = !UI.filters; render(); },
   fclear(){ F = {q:"",player:"",string:"",period:"",kgMin:"",kgMax:"",sort:"date"}; render(); },
   scope(el){ statScope = el.dataset.scope; render(); },
-  ton(){ setSound(!sndOn); },
   daten(){ dataSheet(); },
   export(){ exportBackup(); },
   import(){ const f = $("#fileImport"); if(f) f.click(); },
@@ -2026,7 +1935,7 @@ if(typeof window!=="undefined" && window.__SAITENBUCH_TEST__){
     get S(){ return S; }, set S(v){ S = v; }, get F(){ return F; }, UI, ID, COLLS, APP_VERSION,
     seed, load, save, persist, stamp, migrate, mergeStates, contentKey, replaceState, exportState, baseline, ensureMeta, hashOf,
     render, route, ghCfg, ghSetCfg, ghSetTok, ghAktiv, syncNow, queueSync, ghGet, ghPut, loadDemo, entferneDemo, hatDemo,
-    jobsSorted, jobsOf, jobsOfRacket, jobsWithString, jobById, dueRackets, racketInterval, stringRemaining, stringTensions, tensions, isSplit, isHybrid,
+    jobsSorted, jobsOf, jobsOfRacket, jobsWithString, jobById, racketInterval, racketPic, catalogCode, picThumb, picStrings, stringRemaining, stringTensions, tensions, isSplit, isHybrid,
     viewArchive, viewPlayers, viewRackets, viewStrings, viewStats, viewEmpty, jobConsole, lcd, lcdStr, fmtKg, ago, todayISO, localISO, daysBetween,
     openSheet, closeAllSheets, layers, jobForm, playerForm, racketForm, stringForm, jobSheet, playerSheet, racketSheet, stringSheet, dataSheet, dataBody,
     setStatScope(v){ statScope = v; }, setRoute(t){ route.tab = t; }, getSync(){ return {syncState, syncText, syncSha}; }, syncView,

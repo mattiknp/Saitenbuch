@@ -258,7 +258,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink-3)}
 .stage .pic{display:grid;place-items:center;width:100%}
 .pic-svg{display:block;height:min(560px,62vh);width:auto;max-width:100%;overflow:visible;filter:drop-shadow(0 18px 22px rgb(0 0 0/.45))}
 .stage .pic.own img{display:block;max-width:100%;max-height:min(560px,62vh);width:auto;height:auto;border-radius:12px}
-.pic-probe{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .stage-cap{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;font-size:13px;color:#9FB0B9}
 .stage-cap b{font-weight:650;color:#E7EEF1}
 .nopic{display:none;justify-items:center;gap:10px;padding:34px 10px 10px;text-align:center;color:#9FB0B9;font-size:14px}
@@ -769,34 +768,97 @@ function lcd(str, o){
 }
 
 /* ══════════ Schläger-Fotos ══════════
-   Eigenes Foto (im Archiv gespeichert, verkleinert) hat Vorrang. Sonst das Produktfoto des Modells:
-   es wird nur verlinkt, nicht kopiert, und kommt vom Händler Tennis Warehouse. Deren Bilder zeigen links
-   die Seitenansicht und rechts die Vorderansicht; angezeigt wird nur die Vorderansicht.
-   Das Produktfoto wird freigestellt (Weiß wird per SVG-Filter durchsichtig; manche Fotos kommen schon
-   durchsichtig, deren Alpha bleibt erhalten) und bekommt die Saiten der
-   Bespannung in ihren Farben aus dem Regal. Kopf-Innenrand pro Foto vermessen. */
+   Eigenes Foto (im Archiv gespeichert, verkleinert) hat Vorrang und wird unverändert gezeigt. Sonst das
+   Produktfoto aus dem Katalog: verlinkt (nicht kopiert) vom Händler Tennis Warehouse, dessen Bildserver
+   Pixelzugriff erlaubt (CORS). Die App stellt den Schläger frei (Hintergrund per Füllung von außen, Halsöffnung
+   und Kopfinneres gezielt), rechnet den weißen Saum aus den Kanten heraus und legt die Saiten der Bespannung
+   in ihren Farben darunter. Pro Bild vermessen: Vorderansicht x0..x1, oben y0, Kopf-Innenrand cx, cy, rx, ry
+   (Anteile von Breite bzw. Höhe). Familien: [Marke, Modell, [Längs, Quer, Kopf in²], Versionen neueste zuerst]. */
+const RACKET_CATALOG = [
+  ["Wilson","Blade 98 16x19",[16,19,98],[["v10 (2025)","WB9810",0.3667,0.955,0.0564,0.66,0.2828,0.2667,0.208],["v9 (2024)","WB9816",0.3433,0.9533,0.0457,0.6517,0.2828,0.2733,0.2177],["v8 (2021)","16BV8R",0.34,0.99,0.0175,0.6633,0.2716,0.2883,0.2347]]],
+  ["Wilson","Blade 98 18x20",[18,20,98],[["v10 (2025)","WB9818",0.3783,0.955,0.0671,0.6667,0.2911,0.2608,0.2055],["v9 (2024)","WB18V",0.3633,0.9533,0.0603,0.66,0.284,0.2625,0.2033]]],
+  ["Wilson","Blade 100",[16,19,100],[["v10 (2025)","WB1001",0.3483,0.955,0.0573,0.65,0.2838,0.275,0.207],["v9 (2024)","WB1009",0.36,0.9533,0.07,0.6567,0.2949,0.2642,0.2046]]],
+  ["Wilson","Blade Pro 98 16x19",[16,19,98],[["v10 (2025)","WB98P1",0.3633,0.955,0.0534,0.6583,0.2813,0.2667,0.2055]]],
+  ["Wilson","Blade Pro 98 18x20",[18,20,98],[["v10 (2025)","WB98P8",0.3633,0.955,0.0573,0.6567,0.2857,0.2675,0.2099],["v9 (2024)","WBPROV",0.35,0.9533,0.0466,0.65,0.2804,0.2758,0.2153]]],
+  ["Wilson","Blade Pro 100",[16,19,100],[["v10 (2025)","WB100P",0.37,0.955,0.0622,0.6617,0.2891,0.265,0.2055]]],
+  ["Wilson","RF 01",[16,19,98],[["2024","WRF1R",0.35,0.955,0.0534,0.6517,0.2843,0.2717,0.2104]]],
+  ["Wilson","RF 01 Pro",[16,19,98],[["2024","WRFPR",0.3533,0.9533,0.0554,0.6533,0.2857,0.2675,0.2099]]],
+  ["Wilson","Pro Staff 97",[16,19,97],[["Classic (2025)","WPS97C",0.36,0.9533,0.0671,0.6567,0.2974,0.2583,0.2109],["v14 (2023)","W97V14",0.325,0.9933,0.0117,0.6583,0.2682,0.2917,0.2362]]],
+  ["Wilson","Clash 100",[16,19,100],[["v3 (2025)","CL103V",0.355,0.955,0.069,0.6567,0.2964,0.2675,0.207],["v2 (2022)","WC100V",0.35,0.995,0.0389,0.6717,0.28,0.285,0.2207],["v1 (2019)","WC100R",0.415,0.99,0.0865,0.7017,0.3037,0.2567,0.1958]]],
+  ["Wilson","Clash 100 Pro",[16,20,100],[["v3 (2025)","CL1P3V",0.3583,0.9533,0.068,0.655,0.2935,0.2667,0.2051],["v2 (2022)","WC100P",0.3367,0.9933,0.0263,0.6633,0.2748,0.2942,0.2281]]],
+  ["Wilson","Ultra 100",[16,19,100],[["v5 (2025)","WU1005",0.355,0.9567,0.068,0.6567,0.2998,0.2675,0.2094],["v4 (2022)","WU10V4",0.3,0.995,0.0097,0.6467,0.2755,0.3083,0.2405]]],
+  ["Wilson","Ultra 99 Pro",[16,19,99],[["v5 (2025)","WU99P5",0.36,0.955,0.0583,0.655,0.2915,0.2717,0.2119]]],
+  ["Wilson","Ultra Pro 16x19",[16,19,97],[["v4 (2023)","WUPRO6",0.3467,0.95,0.0466,0.6467,0.2789,0.2742,0.2148]]],
+  ["Wilson","Shift 99",[18,20,99],[["v1 (2023)","WSP300",0.3467,0.9933,0.0282,0.6667,0.2726,0.3142,0.223]]],
+  ["Wilson","Defyer 100",[16,19,100],[["2026","WRL100",0.405,0.9933,0.0749,0.7,0.2947,0.2592,0.1984]]],
+  ["Head","Speed MP",[16,19,100],[["2026","HSPMP6",0.38,0.9517,0.0758,0.6733,0.3022,0.2725,0.2041],["2024","HSPDM",0.3917,0.9517,0.0904,0.67,0.3115,0.2508,0.2017]]],
+  ["Head","Speed Pro",[18,20,100],[["2026","HSPDP6",0.35,0.955,0.0496,0.6583,0.2862,0.29,0.2153],["2024","HSPDP",0.3567,0.9533,0.0632,0.655,0.2983,0.2683,0.2157]]],
+  ["Head","Radical MP",[16,19,98],[["2025","HRMP",0.37,0.955,0.068,0.6617,0.292,0.2567,0.2036],["2023","HMPR",0.32,0.9983,0.0068,0.6567,0.2668,0.2983,0.2357]]],
+  ["Head","Extreme MP",[16,19,100],[["2026","HREM26",0.39,0.9533,0.0952,0.67,0.3129,0.2475,0.1963],["2024","HREM24",0.365,0.955,0.0777,0.66,0.3056,0.2575,0.2065],["2022","HREM22",0.285,0.965,0.0097,0.6233,0.2711,0.3008,0.2391]]],
+  ["Head","Extreme Pro",[16,19,98],[["2026","HEXP26",0.3767,0.9533,0.0729,0.6667,0.2969,0.2575,0.2036],["2024","HREP24",0.3433,0.9517,0.0534,0.6467,0.2896,0.2717,0.2157]]],
+  ["Head","Gravity MP",[16,20,100],[["2025","HGMPG",0.345,0.9533,0.0573,0.6483,0.2881,0.2767,0.2123]]],
+  ["Head","Gravity Pro",[18,20,100],[["2025","HGPRR",0.305,0.9533,0.0466,0.6283,0.292,0.2883,0.223]]],
+  ["Head","Prestige MP",[18,19,99],[["2025","HPRMP",0.4333,0.9933,0.0895,0.71,0.3079,0.2458,0.1989]]],
+  ["Head","Prestige Pro",[16,19,98],[["2023","PRPROR",0.3383,0.9533,0.0534,0.6467,0.2945,0.2725,0.2216]]],
+  ["Head","Boom MP",[16,19,100],[["2026","HBOMP6",0.3433,0.955,0.0593,0.6483,0.2915,0.275,0.2109],["2024","HBOOMM",0.3833,0.9533,0.0884,0.6667,0.3037,0.255,0.1958],["2022","BOOMM",0.3633,0.9883,0.0447,0.675,0.2794,0.2783,0.2133]]],
+  ["Head","Boom Pro",[16,19,98],[["2026","HBOOP6",0.33,0.9517,0.0457,0.64,0.2818,0.2775,0.2128],["2024","HBOOMP",0.3617,0.955,0.0739,0.6567,0.2959,0.2642,0.2026]]],
+  ["Babolat","Pure Aero",[16,19,100],[["2026","BPAR26",0.3683,0.9533,0.0807,0.66,0.3008,0.2583,0.2026],["2023","BARO",0.3517,0.9533,0.0632,0.6533,0.2915,0.2675,0.2109]]],
+  ["Babolat","Pure Aero 98",[16,20,98],[["2026","BPA98R",0.3967,0.9533,0.0923,0.675,0.3052,0.25,0.1944],["2023","BARO98",0.3483,0.9933,0.0243,0.6717,0.2653,0.2933,0.2225]]],
+  ["Babolat","Pure Drive",[16,19,100],[["2025","BPD25R",0.36,0.955,0.0719,0.6567,0.2959,0.2642,0.2046],["2021","BPD",0.3667,0.9867,0.0457,0.6733,0.2823,0.275,0.2172]]],
+  ["Babolat","Pure Drive 98",[16,19,98],[["2025","PD98R",0.3767,0.9533,0.0807,0.6633,0.2964,0.2558,0.1963]]],
+  ["Babolat","Pure Strike 98 16x19",[16,19,98],[["2024","PS9816",0.3567,0.955,0.0525,0.655,0.2838,0.27,0.2099],["2020","BPS16",0.3483,0.9883,0.0058,0.6667,0.2493,0.2908,0.2308]]],
+  ["Babolat","Pure Strike 98 18x20",[18,20,98],[["2024","PS9818",0.3567,0.955,0.0534,0.6533,0.2779,0.2683,0.2167]]],
+  ["Babolat","Pure Strike 100",[16,19,100],[["2024","PS1019",0.36,0.955,0.0583,0.6567,0.2881,0.2692,0.2085]]],
+  ["Babolat","Pure Strike 97",[16,20,97],[["2024","PS97SN",0.3417,0.955,0.0573,0.6467,0.2901,0.2692,0.2104]]],
+  ["Yonex","VCORE 98",[16,19,98],[["8. Gen (2026)","VC988G",0.365,0.9533,0.0622,0.6583,0.2847,0.2667,0.2021],["7. Gen (2023)","YVC98",0.3433,0.9933,0.0155,0.67,0.2619,0.2933,0.2259]]],
+  ["Yonex","VCORE 100",[16,19,100],[["8. Gen (2026)","VC108G",0.3483,0.9533,0.0603,0.65,0.2877,0.2733,0.207],["7. Gen (2023)","YVC100",0.2767,0.9667,0.0058,0.62,0.2624,0.3125,0.2352]]],
+  ["Yonex","VCORE 95",[16,20,95],[["8. Gen (2026)","VC958G",0.3783,0.9433,0.0797,0.66,0.293,0.2575,0.1929]]],
+  ["Yonex","EZONE 98",[16,19,98],[["2025","EZ98BB",0.36,0.955,0.0612,0.6567,0.2843,0.2633,0.2026],["Lime (2017)","YEZ98",0.32,0.9767,0.0068,0.6483,0.2546,0.295,0.2245]]],
+  ["Yonex","EZONE 100",[16,19,100],[["2025","EZ10BB",0.365,0.955,0.0709,0.66,0.2949,0.2658,0.2026],["Deep Blue (2020)","EZO10",0.3933,0.995,0.0622,0.6933,0.2915,0.2675,0.207]]],
+  ["Yonex","Percept 97",[16,19,97],[["Olivgrün (2023)","PERC97",0.3317,0.955,0.0466,0.6433,0.2813,0.28,0.2143],["Midnight Navy (2025)","PERM97",0.3283,0.9933,0.0087,0.66,0.2609,0.3008,0.2298]]],
+  ["Yonex","Percept 100",[16,19,100],[["Olivgrün (2023)","PERC",0.3417,0.995,0.0321,0.67,0.2828,0.2908,0.2255],["Midnight Navy (2025)","PERM",0.33,0.9933,0.0165,0.6633,0.2711,0.2992,0.2313]]],
+  ["Yonex","Percept 97D",[18,20,97],[["2023","PERC9D",0.3217,0.9933,0.0068,0.6583,0.2595,0.3017,0.2303]]],
+  ["Yonex","Percept 100D",[18,20,100],[["2023","PERC1D",0.3417,0.995,0.0282,0.6667,0.2765,0.2933,0.2259]]],
+  ["Tecnifibre","TF40 305 16x19",[16,19,98],[["2024","TF40R1",0.3583,0.9533,0.0573,0.6567,0.2886,0.2892,0.2119],["v1 (2022)","TF4016",0.3567,0.955,0.0544,0.6433,0.2779,0.2783,0.2167]]],
+  ["Tecnifibre","TF40 305 18x20",[18,20,98],[["2024","TF40R2",0.3583,0.9533,0.0612,0.6533,0.294,0.2892,0.2133],["v1 (2022)","TF4018",0.3567,0.9533,0.0534,0.6433,0.2799,0.2775,0.2196]]],
+  ["Tecnifibre","TF40 315 16x19",[16,19,98],[["2024","TF40R5",0.34,0.9533,0.0466,0.6467,0.2881,0.2992,0.2221]]],
+  ["Tecnifibre","TFight 305S",[18,19,98],[["2023","TF305S",0.3767,0.9433,0.0816,0.6567,0.2964,0.2567,0.2041]]],
+  ["Tecnifibre","TFight 300S",[16,19,100],[["2023","TF300S",0.375,0.9517,0.0845,0.6633,0.2988,0.2583,0.2075]]],
+  ["Tecnifibre","TFight 300",[16,19,100],[["2023","TF30ST",0.385,0.95,0.0943,0.6583,0.3042,0.2617,0.2021]]]
+];
 const PIC_BASE = "https://img.tennis-warehouse.com/watermark/rs.php?path=";
 const PIC_W = 600, PIC_H = 1029;
-/* [Muster, Bildcode, Vorderansicht x0..x1 und oben y0, Kopf-Innenrand cx, cy, rx, ry]; x-Werte als Anteil der Breite, y-Werte der Höhe */
-const PIC_CATALOG = [
-  [/blade/,       "WB9816", .342, .955, .049, .6517, .2833, .2733, .2182],   // Wilson Blade 98 16x19 v9
-  [/rf\s?0?1/,    "WRF1R",  .348, .957, .056, .6517, .2843, .2717, .2104],   // Wilson RF 01
-  [/v\s?core/,    "YVC98",  .342, .995, .018, .6700, .2619, .2942, .2259],   // Yonex VCORE 98 (2023)
-  [/percept/,     "PERC97", .330, .957, .050, .6433, .2813, .2800, .2143],   // Yonex Percept 97
-  [/pure\s?aero/, "BARO",   .350, .955, .066, .6533, .2915, .2692, .2109],   // Babolat Pure Aero (2023)
-  [/extreme/,     "HREM24", .363, .957, .081, .6583, .3056, .2617, .2065],   // Head Extreme MP (2024)
-  [/radical/,     "HMPR",   .318, 1,    .010, .6567, .2668, .2975, .2357]    // Head Radical MP (2023)
-];
-function catalogEntry(r){
-  const m = String((r&&r.model)||"").toLowerCase();
-  return PIC_CATALOG.find(e=>e[0].test(m)) || null;
+const CAT_INDEX = new Map();
+RACKET_CATALOG.forEach(([brand,fam,spec,vers],fi)=>vers.forEach(v=>CAT_INDEX.set(v[1],{brand,fam,spec,fi,ver:v[0],code:v[1],g:v.slice(2)})));
+const catLabel = e => e.brand+" "+e.fam+", "+e.ver;
+/* Passendes Katalogmodell: gewählte Version (racket.pic) oder nach Marke und Modellname. */
+function catalogMatch(r){
+  if(!r || r.pic==="none") return null;
+  if(r.pic && CAT_INDEX.has(r.pic)) return CAT_INDEX.get(r.pic);
+  const brand = String(r.brand||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,3);
+  const comp = (String(r.brand||"")+" "+String(r.model||"")).toLowerCase().replace(/[^a-z0-9]/g,"");
+  if(!comp) return null;
+  let best = null, bs = -1e9;
+  for(const [b,fam,,vers] of RACKET_CATALOG){
+    if(brand && !b.toLowerCase().startsWith(brand)) continue;
+    const toks = fam.toLowerCase().split(/\s+/).map(t=>t.replace(/[^a-z0-9]/g,"")).filter(Boolean);
+    if(!comp.includes(toks[0])) continue;
+    const hit = toks.filter(t=>comp.includes(t)).length, sc0 = hit*10 - (toks.length-hit)*3;
+    vers.forEach((v,i)=>{
+      const vt = (v[0].toLowerCase().match(/v\d+|\d{4}|\d+\.\s*gen|lime|navy|oliv|classic|deep/g)||[]).map(t=>t.replace(/[^a-z0-9]/g,""));
+      const sc = sc0 + vt.filter(t=>comp.includes(t)).length*4 - i*.01;
+      if(sc>bs){ bs = sc; best = CAT_INDEX.get(v[1]); }
+    });
+  }
+  return best;
 }
-const catalogCode = r => { const e = catalogEntry(r); return e? e[1] : null; };
+const catalogCode = r => { const e = catalogMatch(r); return e? e.code : null; };
 function racketPic(r){
   if(!r) return null;
   if(r.photo) return {src:r.photo, own:true};
-  const e = catalogEntry(r);
-  return e? {src:PIC_BASE+e[1]+"-1.jpg&nw=600", own:false, x0:e[2], x1:e[3], y0:e[4], hoop:{cx:e[5]*PIC_W, cy:e[6]*PIC_H, rx:e[7]*PIC_W, ry:e[8]*PIC_H}} : null;
+  const e = catalogMatch(r); if(!e) return null;
+  const [x0,x1,y0,cx,cy,rx,ry] = e.g;
+  return {src:PIC_BASE+e.code+"-1.jpg&nw=600", own:false, code:e.code, x0, x1, y0, hoop:{cx:cx*PIC_W, cy:cy*PIC_H, rx:rx*PIC_W, ry:ry*PIC_H}};
 }
 /* Saiten der Bespannung: Anzahl vom Schläger, Farben aus dem Regal */
 function picStrings(r, j){
@@ -812,11 +874,98 @@ function viz(hex){
   const k = c => Math.round(c*0.5 + 120*0.5);
   return "#"+[k(r),k(g),k(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
+/* Freistellen im Browser, einmal pro Bild, Ergebnis als Blob-Adresse zwischengespeichert. */
+const CUT = new Map();
+function cutout(im, e){
+  const W = im.naturalWidth, H = im.naturalHeight, N = W*H;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const g = cv.getContext("2d", {willReadFrequently:true}); g.drawImage(im, 0, 0);
+  const img = g.getImageData(0, 0, W, H), a = img.data;
+  const [fx0,fx1,,fcx,fcy,frx,fry] = e.g;
+  const X0 = Math.max(0, Math.floor(fx0*W)), X1 = Math.min(W, Math.ceil(fx1*W));
+  const cx = fcx*W, cy = fcy*H, rx = frx*W, ry = fry*H;
+  const bg = new Uint8Array(N), st = [];
+  const light = k => { const i = k*4; return a[i+3] < 16 || (a[i] > 247 && a[i+1] > 247 && a[i+2] > 247); };
+    let mark = 1;                                    // 1 = außen und Halsöffnung, 2 = Kopfinneres (dort liegen die Saiten)
+  const push2 = (x,y) => { if(x<X0 || x>=X1 || y<0 || y>=H) return; const k = y*W+x; if(bg[k]===mark || (mark===1 && bg[k]) || !light(k)) return;
+    if(mark===2){ const ex = (x-cx)/(rx*1.06), ey = (y-cy)/(ry*1.06); if(ex*ex+ey*ey > 1) return; }
+    bg[k] = mark; st.push(k); };
+  const fill = () => { while(st.length){ const k = st.pop(), x = k%W, y = (k-x)/W; push2(x+1,y); push2(x-1,y); push2(x,y+1); push2(x,y-1); } };
+  for(let x=X0;x<X1;x++){ push2(x,0); push2(x,H-1); }
+  for(let y=0;y<H;y++){ push2(X0,y); push2(X1-1,y); }
+  const sx = Math.round(cx); let sy = Math.round(cy+ry+6);
+  while(sy < H*.8 && !light(sy*W+sx)) sy++;
+  if(sy < H*.8) push2(sx, sy);
+  fill();
+  mark = 2;
+  for(let y=Math.ceil(cy-ry+4); y<=Math.floor(cy+ry-4); y++){       // Kopfinneres samt Stencil leeren
+    const dy = (y-cy)/(ry-4), hw = (rx-4)*Math.sqrt(Math.max(0,1-dy*dy));
+    for(let x=Math.ceil(cx-hw); x<=Math.floor(cx+hw); x++){ const k = y*W+x; if(bg[k]!==2){ bg[k] = 2; st.push(k); } }   // auch wenn das Bild innen schon durchsichtig war
+  }
+  fill();
+  /* Maske der Saiten: Kopfinneres, 4 px geweitet, damit die Saiten unter den Rahmen laufen */
+  const R = 4, mk = new Uint8Array(N), tmp = new Uint8Array(N);
+  const by0 = Math.max(0, Math.floor(cy-ry*1.1)), by1 = Math.min(H-1, Math.ceil(cy+ry*1.1));
+  for(let y=by0;y<=by1;y++) for(let x=X0;x<X1;x++){ let v = 0; for(let d=-R; d<=R && !v; d++){ const xx = x+d; if(xx>=X0 && xx<X1 && bg[y*W+xx]===2) v = 1; } tmp[y*W+x] = v; }
+  for(let y=by0;y<=by1;y++) for(let x=X0;x<X1;x++){ let v = 0; for(let d=-R; d<=R && !v; d++){ const yy = y+d; if(yy>=by0 && yy<=by1 && tmp[yy*W+x]) v = 1; } mk[y*W+x] = v; }
+  const mc = document.createElement("canvas"); mc.width = W; mc.height = H;
+  const mg = mc.getContext("2d"), md = mg.createImageData(W, H);
+  for(let k=0;k<N;k++) if(mk[k]){ const i = k*4; md.data[i] = md.data[i+1] = md.data[i+2] = md.data[i+3] = 255; }
+  mg.putImageData(md, 0, 0);
+  for(let k=0;k<N;k++){ const x = k%W; if(bg[k] || x<X0 || x>=X1) a[k*4+3] = 0; }
+  /* Kanten: Mischpixel aus Rahmen und Weiß. Deckkraft aus dem dunkelsten Kanal schätzen und Weiß herausrechnen (zwei Ringe). */
+  const ring = new Uint8Array(N);
+  for(let pass=1; pass<=2; pass++){
+    for(let y=1;y<H-1;y++) for(let x=Math.max(1,X0); x<Math.min(W-1,X1); x++){
+      const k = y*W+x; if(bg[k] || ring[k]) continue;
+      const nb = pass===1? (bg[k-1]||bg[k+1]||bg[k-W]||bg[k+W]) : (ring[k-1]===1||ring[k+1]===1||ring[k-W]===1||ring[k+W]===1);
+      if(!nb) continue;
+      const i = k*4, mn = Math.min(a[i],a[i+1],a[i+2]);
+      if(pass===2 && mn < 190) continue;
+      ring[k] = pass;
+      const al = Math.min(1, Math.max(0, (255-mn)/170));
+      if(al <= .03){ a[i+3] = 0; continue; }
+      for(let c=0;c<3;c++) a[i+c] = Math.max(0, Math.min(255, Math.round((a[i+c]-(1-al)*255)/al)));
+      a[i+3] = Math.round(al*a[i+3]);
+    }
+  }
+  g.putImageData(img, 0, 0);
+  const blob = c => new Promise((res,rej)=> c.toBlob(b=> b? res(URL.createObjectURL(b)) : rej(new Error("toBlob")), "image/png"));
+  return Promise.all([blob(cv), blob(mc)]).then(([url, mask])=>({url, mask}));
+}
+function cutFor(code){
+  let c = CUT.get(code); if(c) return c;
+  const e = CAT_INDEX.get(code);
+  c = {url:null, failed:false};
+  c.p = new Promise((res,rej)=>{
+    const im = new Image(); im.crossOrigin = "anonymous"; im.decoding = "async";
+    im.onload = ()=>{ try{ cutout(im, e).then(res, rej); }catch(err){ rej(err); } };
+    im.onerror = ()=> rej(new Error("Bild nicht ladbar"));
+    im.src = PIC_BASE+code+"-1.jpg&nw=600";
+  }).then(r=>{ c.url = r.url; c.mask = r.mask; return r; }, err=>{ c.failed = true; throw err; });
+  c.p.catch(()=>{});
+  CUT.set(code, c); return c;
+}
+function picBroken(el){ const f = el.closest("[data-pic]"); if(f) f.classList.add("broken"); }
+function hydratePics(root){
+  (root||document).querySelectorAll("image[data-code]:not([href]),image[data-mask]:not([href])").forEach(el=>{
+    const isMask = !!el.dataset.mask, c = cutFor(isMask? el.dataset.mask : el.dataset.code);
+    const set = ()=> el.setAttribute("href", isMask? c.mask : c.url);
+    if(c.url){ set(); return; }
+    if(c.failed){ picBroken(el); return; }
+    c.p.then(set, ()=>picBroken(el));
+  });
+}
+if(typeof MutationObserver!=="undefined"){
+  let pend = false;
+  const mo = new MutationObserver(()=>{ if(pend) return; pend = true; Promise.resolve().then(()=>{ pend = false; hydratePics(document); }); });
+  const go = ()=> mo.observe(document.body, {childList:true, subtree:true});
+  if(document.body) go(); else document.addEventListener("DOMContentLoaded", go);
+}
 let picSeq = 0;
 const picFail = "this.closest('[data-pic]').classList.add('broken')";
 const f1 = n => n.toFixed(1);
-/* Produktfoto als SVG: Saiten unten (reichen bis unter den Rahmen), darüber das freigestellte Foto,
-   dessen Kopfinneres (Stencil des Herstellers) ausgeblendet wird. vb = Bildausschnitt [x, y, w, h]. */
+/* Produktfoto als SVG: Saiten unten (bis unter den Rahmen), darüber der freigestellte Schläger. vb = Ausschnitt [x, y, w, h]. */
 function picSVG(pic, st, vb, o){
   o = o||{};
   const id = "pc"+(++picSeq), h = pic.hoop, rim = 9;
@@ -829,32 +978,29 @@ function picSVG(pic, st, vb, o){
     const top = h.cy-h.ry-rim, bot = h.cy+h.ry+rim, lft = h.cx-h.rx-rim, rgt = h.cx+h.rx+rim;
     const ml = (x,a,b) => '<line x1="'+f1(x)+'" y1="'+f1(a)+'" x2="'+f1(x)+'" y2="'+f1(b)+'"/>';
     const cl = y => '<line x1="'+f1(lft)+'" y1="'+f1(y)+'" x2="'+f1(rgt)+'" y2="'+f1(y)+'"/>';
-    strings = '<g clip-path="url(#'+id+'c)">'+
+    strings = '<g clip-path="url(#'+id+'c)" mask="url(#'+id+'m)">'+
       '<g stroke="'+cm+'" stroke-width="'+sw+'">'+mx.map(x=>ml(x,top,bot)).join("")+'</g>'+
       '<g stroke="'+cc+'" stroke-width="'+sw+'">'+cy.map(cl).join("")+'</g>'+
       (o.thin? '' : '<g stroke="'+cm+'" stroke-width="'+sw+'">'+mx.map((x,i)=>cy.map((y,k)=>(i+k)%2? '' : ml(x,y-4.5,y+4.5)).join("")).join("")+'</g>'+
         '<g stroke="#fff" stroke-opacity=".28" stroke-width=".8">'+mx.map(x=>ml(x-.8,top,bot)).join("")+cy.map(y=>'<line x1="'+f1(lft)+'" y1="'+f1(y-.8)+'" x2="'+f1(rgt)+'" y2="'+f1(y-.8)+'"/>').join("")+'</g>')+
       '</g>';
   }
+  const c = CUT.get(pic.code), href = c && c.url? ' href="'+c.url+'"' : '', mhref = c && c.mask? ' href="'+c.mask+'"' : '';
   return '<svg class="pic-svg" viewBox="'+vb.map(f1).join(" ")+'"'+(o.label? ' role="img" aria-label="'+esc(o.label)+'"' : ' aria-hidden="true"')+'><defs>'+
-    '<filter id="'+id+'f" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -4 -4 -4 0 11.6" result="k"/><feComposite in="k" in2="SourceGraphic" operator="in"/></filter>'+
     '<clipPath id="'+id+'c"><ellipse cx="'+f1(h.cx)+'" cy="'+f1(h.cy)+'" rx="'+f1(h.rx+rim)+'" ry="'+f1(h.ry+rim)+'"/></clipPath>'+
-    '<mask id="'+id+'m" maskUnits="userSpaceOnUse" x="0" y="0" width="'+PIC_W+'" height="'+PIC_H+'"><rect width="'+PIC_W+'" height="'+PIC_H+'" fill="#fff"/><ellipse cx="'+f1(h.cx)+'" cy="'+f1(h.cy)+'" rx="'+f1(h.rx-5)+'" ry="'+f1(h.ry-5)+'" fill="#000"/></mask>'+
-    '<clipPath id="'+id+'v"><rect x="'+f1(pic.x0*PIC_W)+'" y="0" width="'+f1((pic.x1-pic.x0)*PIC_W)+'" height="'+PIC_H+'"/></clipPath></defs>'+
-    strings+'<g clip-path="url(#'+id+'v)"><image href="'+esc(pic.src)+'" width="'+PIC_W+'" height="'+PIC_H+'" filter="url(#'+id+'f)" mask="url(#'+id+'m)" referrerpolicy="no-referrer"/></g></svg>';
+    '<mask id="'+id+'m" maskUnits="userSpaceOnUse" x="0" y="0" width="'+PIC_W+'" height="'+PIC_H+'"><image data-mask="'+esc(pic.code)+'"'+mhref+' width="'+PIC_W+'" height="'+PIC_H+'"/></mask></defs>'+
+    strings+'<image data-code="'+esc(pic.code)+'"'+href+' width="'+PIC_W+'" height="'+PIC_H+'"/></svg>';
 }
-/* Ladefehler bei SVG-<image> lassen sich nicht abfangen: ein unsichtbares <img> mit derselben Adresse meldet ihn. */
-const picProbe = src => '<img class="pic-probe" src="'+esc(src)+'" alt="" referrerpolicy="no-referrer" onerror="'+picFail+'">';
 function picBig(pic, st, alt){
   if(pic.own) return '<div class="pic own"><img src="'+esc(pic.src)+'" alt="'+esc(alt)+'" decoding="async" onerror="'+picFail+'"></div>';
   const top = Math.max(0, pic.y0*PIC_H-6);
-  return '<div class="pic">'+picSVG(pic, st, [pic.x0*PIC_W, top, (pic.x1-pic.x0)*PIC_W, PIC_H*.985-top], {label:alt})+picProbe(pic.src)+'</div>';
+  return '<div class="pic">'+picSVG(pic, st, [pic.x0*PIC_W, top, (pic.x1-pic.x0)*PIC_W, PIC_H*.985-top], {label:alt})+'</div>';
 }
 /* Vorschaubild: nur der Kopf, quadratisch. */
 function picThumb(pic, st){
   if(pic.own) return '<span class="thumb-pic own" data-pic><img src="'+esc(pic.src)+'" alt="" decoding="async" loading="lazy" onerror="'+picFail+'"></span>';
   const h = pic.hoop, size = 2*(h.rx+22)*1.06, x = h.cx-size/2, y = h.cy-h.ry-22-size*.03;
-  return '<span class="thumb-pic" data-pic>'+picSVG(pic, st, [x, y, size, size], {thin:true})+picProbe(pic.src)+'</span>';
+  return '<span class="thumb-pic" data-pic>'+picSVG(pic, st, [x, y, size, size], {thin:true})+'</span>';
 }
 function racketFigure(r, j){
   const name = r? (r.brand+" "+r.model).trim() : "Schläger", pic = racketPic(r), st = picStrings(r, j);
@@ -1431,6 +1577,10 @@ function racketForm(r, cb, presetOwner){
     '<div class="form"><div class="field"><label for="rOwner">Besitzer</label><div class="sel"><select id="rOwner">'+S.players.map(p=>optionHTML(p.id,p.name,d.ownerId)).join("")+'</select></div></div>'+
     '<div class="row2"><div class="field"><label for="rBrand">Marke</label><input type="text" id="rBrand" data-autofocus value="'+esc(d.brand)+'" placeholder="Wilson, Babolat, Head" autocomplete="off"></div>'+
     '<div class="field"><label for="rModel">Modell</label><input type="text" id="rModel" value="'+esc(d.model)+'" placeholder="Blade v9 98" autocomplete="off"></div></div>'+
+    '<div class="row2"><div class="field"><label for="rCat">Katalogmodell</label><div class="sel"><select id="rCat"><option value="auto">Automatisch</option>'+
+    ["Wilson","Head","Babolat","Yonex","Tecnifibre"].map(b=>'<optgroup label="'+b+'">'+RACKET_CATALOG.map((f,i)=>f[0]===b? '<option value="'+i+'">'+esc(f[1])+'</option>' : '').join("")+'</optgroup>').join("")+
+    '<option value="none">Ohne Produktfoto</option></select></div></div>'+
+    '<div class="field"><label for="rVer">Version</label><div class="sel"><select id="rVer"></select></div></div></div>'+
     '<div class="field"><span class="flabel">Foto</span><div class="pic-edit"><span class="rk-thumb big" id="rPicBox"></span><div class="pic-side"><p class="hint" id="rPicHint"></p>'+
     '<div class="pic-btns"><label class="btn sm" for="rPhoto">'+ic("camera")+'Eigenes Foto</label><input type="file" accept="image/*" id="rPhoto" class="vh"><button type="button" class="btn sm ghost" id="rPhotoDel">Entfernen</button></div></div></div></div>'+
     '<div class="row3"><div class="field"><label for="rMains">Längssaiten</label><input type="number" inputmode="numeric" id="rMains" min="12" max="20" value="'+d.mains+'"></div>'+
@@ -1444,15 +1594,37 @@ function racketForm(r, cb, presetOwner){
     onMount(sh){
       const q = s => sh.querySelector(s);
       try{ q("#rBrand").focus({preventScroll:true}); }catch(e){}
-      let photo = d.photo || "";
+      let photo = d.photo || "", pic0 = d.pic || "";
+      /* Katalog: "auto" folgt dem Modellnamen, sonst ist eine bestimmte Version gewählt (racket.pic). */
+      const catSel = q("#rCat"), verSel = q("#rVer");
+      const paintCat = ()=>{
+        const cur = catalogMatch({brand:q("#rBrand").value, model:q("#rModel").value, pic:pic0});
+        if(pic0==="none"){ catSel.value = "none"; verSel.innerHTML = '<option>Kein Produktfoto</option>'; verSel.disabled = true; return; }
+        if(!pic0){ catSel.value = "auto"; verSel.innerHTML = '<option>'+esc(cur? cur.brand+" "+cur.fam+", "+cur.ver : "Kein passendes Modell")+'</option>'; verSel.disabled = true; return; }
+        catSel.value = String(cur.fi); verSel.disabled = false;
+        verSel.innerHTML = RACKET_CATALOG[cur.fi][3].map(v=>'<option value="'+v[1]+'"'+(v[1]===cur.code?' selected':'')+'>'+esc(v[0])+'</option>').join("");
+      };
+      catSel.addEventListener("change", ()=>{
+        const v = catSel.value;
+        if(v==="auto" || v==="none") pic0 = v==="none"? "none" : "";
+        else {
+          const fam = RACKET_CATALOG[+v]; pic0 = fam[3][0][1];
+          if(!q("#rBrand").value.trim()) q("#rBrand").value = fam[0];
+          if(!q("#rModel").value.trim()) q("#rModel").value = fam[1];
+          q("#rMains").value = fam[2][0]; q("#rCross").value = fam[2][1]; q("#rHead").value = fam[2][2];
+        }
+        paintCat(); paintPic();
+      });
+      verSel.addEventListener("change", ()=>{ pic0 = verSel.value; paintPic(); });
       const paintPic = ()=>{
-        const tmp = {brand:q("#rBrand").value, model:q("#rModel").value, photo}, pic = racketPic(tmp);
+        const tmp = {brand:q("#rBrand").value, model:q("#rModel").value, photo, pic:pic0}, pic = racketPic(tmp);
         q("#rPicBox").innerHTML = pic? picThumb(pic, r? picStrings(r, jobsOfRacket(r.id)[0]) : null)+ic("racket") : ic("racket");
-        q("#rPicHint").textContent = photo? "Dein eigenes Foto." : pic? "Produktfoto des Modells. Mit einem eigenen Foto siehst du genau diesen Schläger." : "Für dieses Modell gibt es kein Produktfoto. Mach einfach selbst eins.";
+        q("#rPicHint").textContent = photo? "Dein eigenes Foto. Es hat Vorrang vor dem Produktfoto." : pic? "Produktfoto aus dem Katalog, mit den Saiten deiner letzten Bespannung." : "Kein Produktfoto. Wähl oben ein Katalogmodell oder mach selbst ein Foto.";
         q("#rPhotoDel").hidden = !photo;
       };
-      paintPic();
-      q("#rModel").addEventListener("input", paintPic); q("#rBrand").addEventListener("input", paintPic);
+      paintCat(); paintPic();
+      const retype = ()=>{ if(!pic0) paintCat(); paintPic(); };
+      q("#rModel").addEventListener("input", retype); q("#rBrand").addEventListener("input", retype);
       q("#rPhoto").addEventListener("change", async e=>{
         const file = e.target.files && e.target.files[0]; if(!file) return;
         try{ photo = await shrinkPhoto(file); paintPic(); }catch(err){ toast("Das Bild ließ sich nicht lesen"); }
@@ -1466,7 +1638,7 @@ function racketForm(r, cb, presetOwner){
         const brand = q("#rBrand").value.trim(), model = q("#rModel").value.trim();
         if(!brand && !model){ toast("Marke oder Modell angeben"); return; }
         const rec = {ownerId:q("#rOwner").value, brand, model, mains:+q("#rMains").value||16, crosses:+q("#rCross").value||19,
-          head:q("#rHead").value? +q("#rHead").value : "", weight:q("#rWeight").value? +q("#rWeight").value : "", grip:q("#rGrip").value.trim(), note:q("#rNote").value.trim(), photo, retired:false};
+          head:q("#rHead").value? +q("#rHead").value : "", weight:q("#rWeight").value? +q("#rWeight").value : "", grip:q("#rGrip").value.trim(), note:q("#rNote").value.trim(), photo, pic:pic0, retired:false};
         let out;
         if(isNew){ out = Object.assign({id:uid()}, rec); S.rackets.push(out); }
         else { const i = S.rackets.findIndex(x=>x.id===r.id); S.rackets[i] = Object.assign({}, S.rackets[i], rec); out = S.rackets[i]; }
@@ -1931,11 +2103,12 @@ render({top:true});
 if(ghAktiv()){ setSync("busy","Gleicht ab"); syncNow(); } else paintSync();
 
 if(typeof window!=="undefined" && window.__SAITENBUCH_TEST__){
+  window.__T_picBig = (pic,st,alt)=>picBig(pic,st,alt);
   window.__T = {
     get S(){ return S; }, set S(v){ S = v; }, get F(){ return F; }, UI, ID, COLLS, APP_VERSION,
     seed, load, save, persist, stamp, migrate, mergeStates, contentKey, replaceState, exportState, baseline, ensureMeta, hashOf,
     render, route, ghCfg, ghSetCfg, ghSetTok, ghAktiv, syncNow, queueSync, ghGet, ghPut, loadDemo, entferneDemo, hatDemo,
-    jobsSorted, jobsOf, jobsOfRacket, jobsWithString, jobById, racketInterval, racketPic, catalogCode, picThumb, picStrings, stringRemaining, stringTensions, tensions, isSplit, isHybrid,
+    jobsSorted, jobsOf, jobsOfRacket, jobsWithString, jobById, racketInterval, racketPic, catalogCode, catalogMatch, RACKET_CATALOG, CAT_INDEX, picThumb, picStrings, hydratePics, CUT, stringRemaining, stringTensions, tensions, isSplit, isHybrid,
     viewArchive, viewPlayers, viewRackets, viewStrings, viewStats, viewEmpty, jobConsole, lcd, lcdStr, fmtKg, ago, todayISO, localISO, daysBetween,
     openSheet, closeAllSheets, layers, jobForm, playerForm, racketForm, stringForm, jobSheet, playerSheet, racketSheet, stringSheet, dataSheet, dataBody,
     setStatScope(v){ statScope = v; }, setRoute(t){ route.tab = t; }, getSync(){ return {syncState, syncText, syncSha}; }, syncView,
